@@ -37,294 +37,294 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 class BloodRequestIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @Autowired
-    private BloodRequestRepository bloodRequestRepository;
+        @Autowired
+        private BloodRequestRepository bloodRequestRepository;
 
-    @Autowired
-    private BloodStockRepository bloodStockRepository;
+        @Autowired
+        private BloodStockRepository bloodStockRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+        @Autowired
+        private RoleRepository roleRepository;
 
-    private User testUser;
+        private User testUser;
 
-    private BloodRequest testRequest;
+        private BloodRequest testRequest;
 
-    // =========================================================
-    // SETUP
-    // =========================================================
+        // =========================================================
+        // SETUP
+        // =========================================================
 
-    @BeforeEach
-    void setUp() {
+        @BeforeEach
+        void setUp() {
 
-        bloodRequestRepository.deleteAll();
-        bloodStockRepository.deleteAll();
-        userRepository.findByEmail("bloodrequest@gmail.com").ifPresent(userRepository::delete);
+                bloodRequestRepository.deleteAll();
+                bloodStockRepository.deleteAll();
+                userRepository.findByEmail("bloodrequest@gmail.com").ifPresent(userRepository::delete);
 
-        // -----------------------------------------------------
-        // USER ROLE
-        // -----------------------------------------------------
+                // -----------------------------------------------------
+                // USER ROLE
+                // -----------------------------------------------------
 
-        Role userRole = roleRepository.findByRoleNameIgnoreCase("USER")
-                .orElseGet(() -> {
+                Role userRole = roleRepository.findByRoleNameIgnoreCase("USER")
+                                .orElseGet(() -> {
 
-                    Role role = new Role();
-                    role.setRoleName("USER");
+                                        Role role = new Role();
+                                        role.setRoleName("USER");
 
-                    return roleRepository.save(role);
-                });
+                                        return roleRepository.save(role);
+                                });
 
-        // -----------------------------------------------------
-        // INITIALIZE BLOOD STOCK FOR APPROVAL TESTS
-        // -----------------------------------------------------
+                // -----------------------------------------------------
+                // INITIALIZE BLOOD STOCK FOR APPROVAL TESTS
+                // -----------------------------------------------------
 
-        BloodStock stockO = new BloodStock();
-        stockO.setBloodGroup(BloodGroup.O_POSITIVE);
-        stockO.setUnitsAvailable(10);
-        stockO.setLastUpdated(LocalDateTime.now());
-        bloodStockRepository.save(stockO);
+                BloodStock stockO = new BloodStock();
+                stockO.setBloodGroup(BloodGroup.O_POSITIVE);
+                stockO.setUnitsAvailable(10);
+                stockO.setLastUpdated(LocalDateTime.now());
+                bloodStockRepository.save(stockO);
 
-        BloodStock stockA = new BloodStock();
-        stockA.setBloodGroup(BloodGroup.A_POSITIVE);
-        stockA.setUnitsAvailable(10);
-        stockA.setLastUpdated(LocalDateTime.now());
-        bloodStockRepository.save(stockA);
+                BloodStock stockA = new BloodStock();
+                stockA.setBloodGroup(BloodGroup.A_POSITIVE);
+                stockA.setUnitsAvailable(10);
+                stockA.setLastUpdated(LocalDateTime.now());
+                bloodStockRepository.save(stockA);
 
-        // -----------------------------------------------------
-        // CREATE TEST USER
-        // -----------------------------------------------------
+                // -----------------------------------------------------
+                // CREATE TEST USER
+                // -----------------------------------------------------
 
-        testUser = new User();
+                testUser = new User();
 
-        testUser.setFullName("Blood Request User");
-        testUser.setEmail("bloodrequest@gmail.com");
-        testUser.setPassword("Password@123");
-        testUser.setPhone("9876543210");
-        testUser.setEnabled(true);
-        testUser.setCreatedAt(LocalDateTime.now());
-        testUser.setRole(userRole);
+                testUser.setFullName("Blood Request User");
+                testUser.setEmail("bloodrequest@gmail.com");
+                testUser.setPassword("Password@123");
+                testUser.setPhone("9876543210");
+                testUser.setEnabled(true);
+                testUser.setCreatedAt(LocalDateTime.now());
+                testUser.setRole(userRole);
 
-        testUser = userRepository.save(testUser);
+                testUser = userRepository.save(testUser);
 
-        // -----------------------------------------------------
+                // -----------------------------------------------------
+                // CREATE BLOOD REQUEST
+                // -----------------------------------------------------
+
+                testRequest = new BloodRequest();
+
+                testRequest.setUser(testUser);
+                testRequest.setBloodGroup(BloodGroup.O_POSITIVE);
+                testRequest.setUnitsRequired(2);
+                testRequest.setReason("Urgent medical requirement");
+                testRequest.setRequestDate(LocalDateTime.now());
+                testRequest.setStatus(RequestStatus.PENDING);
+                testRequest.setDeleted(false);
+
+                testRequest = bloodRequestRepository.save(testRequest);
+        }
+
+        // =========================================================
+        // GET MY REQUESTS
+        // =========================================================
+
+        @Test
+        @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
+        void getMyRequests_shouldReturn200() throws Exception {
+
+                mockMvc.perform(
+                                get("/api/bloodrequests/my"))
+                                .andExpect(status().isOk());
+        }
+
+        // =========================================================
+        // GET ALL REQUESTS
+        // =========================================================
+
+        @Test
+        @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
+        void getAllRequests_shouldReturn200_forAdmin()
+                        throws Exception {
+
+                mockMvc.perform(
+                                get("/api/bloodrequests"))
+                                .andExpect(status().isOk());
+        }
+
+        // =========================================================
+        // GET REQUEST BY ID
+        // =========================================================
+
+        @Test
+        @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
+        void getRequestById_shouldReturn200_whenRequestExists()
+                        throws Exception {
+
+                mockMvc.perform(
+                                get("/api/bloodrequests/{id}",
+                                                testRequest.getId()))
+                                .andExpect(status().isOk());
+        }
+
+        // =========================================================
+        // GET REQUEST BY INVALID ID
+        // =========================================================
+
+        @Test
+        @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
+        void getRequestById_shouldReturn404_whenRequestDoesNotExist()
+                        throws Exception {
+
+                mockMvc.perform(
+                                get("/api/bloodrequests/{id}", 999999L))
+                                .andExpect(status().isNotFound());
+        }
+
+        // =========================================================
         // CREATE BLOOD REQUEST
-        // -----------------------------------------------------
+        // =========================================================
 
-        testRequest = new BloodRequest();
+        @Test
+        @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
+        void createRequest_shouldReturn201_whenRequestIsValid()
+                        throws Exception {
 
-        testRequest.setUser(testUser);
-        testRequest.setBloodGroup(BloodGroup.O_POSITIVE);
-        testRequest.setUnitsRequired(2);
-        testRequest.setReason("Urgent medical requirement");
-        testRequest.setRequestDate(LocalDateTime.now());
-        testRequest.setStatus(RequestStatus.PENDING);
-        testRequest.setDeleted(false);
+                BloodRequestRequest request = new BloodRequestRequest();
 
-        testRequest = bloodRequestRepository.save(testRequest);
-    }
+                request.setBloodGroup(BloodGroup.A_POSITIVE);
+                request.setUnitsRequired(3);
+                request.setReason("Surgery requirement");
 
-    // =========================================================
-    // GET MY REQUESTS
-    // =========================================================
+                mockMvc.perform(
+                                post("/api/bloodrequests")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(
+                                                                objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated());
+        }
 
-    @Test
-    @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
-    void getMyRequests_shouldReturn200() throws Exception {
+        // =========================================================
+        // GET REQUESTS BY STATUS
+        // =========================================================
 
-        mockMvc.perform(
-                get("/api/bloodrequests/my"))
-                .andExpect(status().isOk());
-    }
+        @Test
+        @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
+        void getRequestsByStatus_shouldReturn200()
+                        throws Exception {
 
-    // =========================================================
-    // GET ALL REQUESTS
-    // =========================================================
+                mockMvc.perform(
+                                get("/api/bloodrequests/status/PENDING"))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
-    void getAllRequests_shouldReturn200_forAdmin()
-            throws Exception {
+        // =========================================================
+        // APPROVE REQUEST
+        // =========================================================
 
-        mockMvc.perform(
-                get("/api/bloodrequests"))
-                .andExpect(status().isOk());
-    }
+        @Test
+        @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
+        void approveRequest_shouldReturn200_whenRequestIsValid()
+                        throws Exception {
 
-    // =========================================================
-    // GET REQUEST BY ID
-    // =========================================================
+                mockMvc.perform(
+                                put("/api/bloodrequests/{id}/approve",
+                                                testRequest.getId()))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
-    void getRequestById_shouldReturn200_whenRequestExists()
-            throws Exception {
+        // =========================================================
+        // REJECT REQUEST
+        // =========================================================
 
-        mockMvc.perform(
-                get("/api/bloodrequests/{id}",
-                        testRequest.getId()))
-                .andExpect(status().isOk());
-    }
+        @Test
+        @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
+        void rejectRequest_shouldReturn200_whenRequestExists()
+                        throws Exception {
 
-    // =========================================================
-    // GET REQUEST BY INVALID ID
-    // =========================================================
+                mockMvc.perform(
+                                put("/api/bloodrequests/{id}/reject",
+                                                testRequest.getId()))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
-    void getRequestById_shouldReturn404_whenRequestDoesNotExist()
-            throws Exception {
+        // =========================================================
+        // APPROVE REQUEST - INVALID ID
+        // =========================================================
 
-        mockMvc.perform(
-                get("/api/bloodrequests/{id}", 999999L))
-                .andExpect(status().isNotFound());
-    }
+        @Test
+        @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
+        void approveRequest_shouldReturn404_whenRequestDoesNotExist()
+                        throws Exception {
 
-    // =========================================================
-    // CREATE BLOOD REQUEST
-    // =========================================================
+                mockMvc.perform(
+                                put("/api/bloodrequests/{id}/approve",
+                                                999999L))
+                                .andExpect(status().isNotFound());
+        }
 
-    @Test
-    @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
-    void createRequest_shouldReturn201_whenRequestIsValid()
-            throws Exception {
+        // =========================================================
+        // REJECT REQUEST - INVALID ID
+        // =========================================================
 
-        BloodRequestRequest request = new BloodRequestRequest();
+        @Test
+        @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
+        void rejectRequest_shouldReturn404_whenRequestDoesNotExist()
+                        throws Exception {
 
-        request.setBloodGroup(BloodGroup.A_POSITIVE);
-        request.setUnitsRequired(3);
-        request.setReason("Surgery requirement");
+                mockMvc.perform(
+                                put("/api/bloodrequests/{id}/reject",
+                                                999999L))
+                                .andExpect(status().isNotFound());
+        }
 
-        mockMvc.perform(
-                post("/api/bloodrequests")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                                objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-    }
+        // =========================================================
+        // USER CANNOT APPROVE REQUEST
+        // =========================================================
 
-    // =========================================================
-    // GET REQUESTS BY STATUS
-    // =========================================================
+        @Test
+        @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
+        void approveRequest_shouldReturn403_forUser()
+                        throws Exception {
 
-    @Test
-    @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
-    void getRequestsByStatus_shouldReturn200()
-            throws Exception {
+                mockMvc.perform(
+                                put("/api/bloodrequests/{id}/approve",
+                                                testRequest.getId()))
+                                .andExpect(status().isForbidden());
+        }
 
-        mockMvc.perform(
-                get("/api/bloodrequests/status/PENDING"))
-                .andExpect(status().isOk());
-    }
+        // =========================================================
+        // USER CANNOT REJECT REQUEST
+        // =========================================================
 
-    // =========================================================
-    // APPROVE REQUEST
-    // =========================================================
+        @Test
+        @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
+        void rejectRequest_shouldReturn403_forUser()
+                        throws Exception {
 
-    @Test
-    @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
-    void approveRequest_shouldReturn200_whenRequestIsValid()
-            throws Exception {
+                mockMvc.perform(
+                                put("/api/bloodrequests/{id}/reject",
+                                                testRequest.getId()))
+                                .andExpect(status().isForbidden());
+        }
 
-        mockMvc.perform(
-                put("/api/bloodrequests/{id}/approve",
-                        testRequest.getId()))
-                .andExpect(status().isOk());
-    }
+        // =========================================================
+        // UNAUTHENTICATED USER
+        // =========================================================
 
-    // =========================================================
-    // REJECT REQUEST
-    // =========================================================
+        @Test
+        void getRequests_shouldReturn401_whenNotAuthenticated()
+                        throws Exception {
 
-    @Test
-    @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
-    void rejectRequest_shouldReturn200_whenRequestExists()
-            throws Exception {
-
-        mockMvc.perform(
-                put("/api/bloodrequests/{id}/reject",
-                        testRequest.getId()))
-                .andExpect(status().isOk());
-    }
-
-    // =========================================================
-    // APPROVE REQUEST - INVALID ID
-    // =========================================================
-
-    @Test
-    @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
-    void approveRequest_shouldReturn404_whenRequestDoesNotExist()
-            throws Exception {
-
-        mockMvc.perform(
-                put("/api/bloodrequests/{id}/approve",
-                        999999L))
-                .andExpect(status().isNotFound());
-    }
-
-    // =========================================================
-    // REJECT REQUEST - INVALID ID
-    // =========================================================
-
-    @Test
-    @WithMockUser(username = "admin@gmail.com", roles = "ADMIN")
-    void rejectRequest_shouldReturn404_whenRequestDoesNotExist()
-            throws Exception {
-
-        mockMvc.perform(
-                put("/api/bloodrequests/{id}/reject",
-                        999999L))
-                .andExpect(status().isNotFound());
-    }
-
-    // =========================================================
-    // USER CANNOT APPROVE REQUEST
-    // =========================================================
-
-    @Test
-    @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
-    void approveRequest_shouldReturn403_forUser()
-            throws Exception {
-
-        mockMvc.perform(
-                put("/api/bloodrequests/{id}/approve",
-                        testRequest.getId()))
-                .andExpect(status().isForbidden());
-    }
-
-    // =========================================================
-    // USER CANNOT REJECT REQUEST
-    // =========================================================
-
-    @Test
-    @WithMockUser(username = "bloodrequest@gmail.com", roles = "USER")
-    void rejectRequest_shouldReturn403_forUser()
-            throws Exception {
-
-        mockMvc.perform(
-                put("/api/bloodrequests/{id}/reject",
-                        testRequest.getId()))
-                .andExpect(status().isForbidden());
-    }
-
-    // =========================================================
-    // UNAUTHENTICATED USER
-    // =========================================================
-
-    @Test
-    void getRequests_shouldReturn401_whenNotAuthenticated()
-            throws Exception {
-
-        mockMvc.perform(
-                get("/api/bloodrequests"))
-                .andExpect(status().isUnauthorized());
-    }
+                mockMvc.perform(
+                                get("/api/bloodrequests"))
+                                .andExpect(status().isUnauthorized());
+        }
 }
