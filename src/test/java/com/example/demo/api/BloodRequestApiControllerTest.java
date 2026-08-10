@@ -39,238 +39,238 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(BloodRequestApiController.class)
 class BloodRequestApiControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @MockBean
-    private BloodRequestService bloodRequestService;
+        @MockBean
+        private BloodRequestService bloodRequestService;
 
-    @MockBean
-    private JwtService jwtService;
+        @MockBean
+        private JwtService jwtService;
 
-    @MockBean
-    private CustomUserDetailsService customUserDetailsService;
+        @MockBean
+        private CustomUserDetailsService customUserDetailsService;
 
-    // =========================================================
-    // GET ALL REQUESTS - SUCCESS
-    // =========================================================
+        // =========================================================
+        // GET ALL REQUESTS - SUCCESS
+        // =========================================================
 
-    @Test
-    void getAllRequests_shouldReturn200_whenRequestsExist() throws Exception {
+        @Test
+        void getAllRequests_shouldReturn200_whenRequestsExist() throws Exception {
 
-        BloodRequestResponse req1 = new BloodRequestResponse();
-        req1.setId(1L);
-        req1.setFullName("John Doe");
-        req1.setBloodGroup(BloodGroup.A_POSITIVE);
-        req1.setStatus(RequestStatus.PENDING);
+                BloodRequestResponse req1 = new BloodRequestResponse();
+                req1.setId(1L);
+                req1.setFullName("John Doe");
+                req1.setBloodGroup(BloodGroup.A_POSITIVE);
+                req1.setStatus(RequestStatus.PENDING);
 
-        BloodRequestResponse req2 = new BloodRequestResponse();
-        req2.setId(2L);
-        req2.setFullName("Jane Smith");
-        req2.setBloodGroup(BloodGroup.O_NEGATIVE);
-        req2.setStatus(RequestStatus.APPROVED);
+                BloodRequestResponse req2 = new BloodRequestResponse();
+                req2.setId(2L);
+                req2.setFullName("Jane Smith");
+                req2.setBloodGroup(BloodGroup.O_NEGATIVE);
+                req2.setStatus(RequestStatus.APPROVED);
 
-        List<BloodRequestResponse> requests = Arrays.asList(req1, req2);
+                List<BloodRequestResponse> requests = Arrays.asList(req1, req2);
 
-        when(bloodRequestService.getAllRequests()).thenReturn(requests);
+                when(bloodRequestService.getAllRequests()).thenReturn(requests);
 
-        mockMvc.perform(get("/api/bloodrequests")
-                .with(user("admin").roles("ADMIN")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].fullName").value("John Doe"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].fullName").value("Jane Smith"));
+                mockMvc.perform(get("/api/bloodrequests")
+                                .with(user("admin").roles("ADMIN")))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$.length()").value(2))
+                                .andExpect(jsonPath("$[0].id").value(1))
+                                .andExpect(jsonPath("$[0].fullName").value("John Doe"))
+                                .andExpect(jsonPath("$[1].id").value(2))
+                                .andExpect(jsonPath("$[1].fullName").value("Jane Smith"));
 
-        verify(bloodRequestService, times(1)).getAllRequests();
-    }
+                verify(bloodRequestService, times(1)).getAllRequests();
+        }
 
-    // =========================================================
-    // GET ALL REQUESTS - EMPTY LIST
-    // =========================================================
+        // =========================================================
+        // GET ALL REQUESTS - EMPTY LIST
+        // =========================================================
 
-    @Test
-    void getAllRequests_shouldReturn200_whenNoRequestsExist() throws Exception {
+        @Test
+        void getAllRequests_shouldReturn200_whenNoRequestsExist() throws Exception {
 
-        when(bloodRequestService.getAllRequests()).thenReturn(Collections.emptyList());
+                when(bloodRequestService.getAllRequests()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/api/bloodrequests")
-                .with(user("admin").roles("ADMIN")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(0));
+                mockMvc.perform(get("/api/bloodrequests")
+                                .with(user("admin").roles("ADMIN")))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$.length()").value(0));
 
-        verify(bloodRequestService, times(1)).getAllRequests();
-    }
+                verify(bloodRequestService, times(1)).getAllRequests();
+        }
 
-    // =========================================================
-    // GET REQUEST BY ID - SUCCESS
-    // =========================================================
+        // =========================================================
+        // GET REQUEST BY ID - SUCCESS
+        // =========================================================
 
-    @Test
-    void getRequestById_shouldReturn200_whenRequestExists() throws Exception {
+        @Test
+        void getRequestById_shouldReturn200_whenRequestExists() throws Exception {
 
-        Long requestId = 1L;
+                Long requestId = 1L;
 
-        BloodRequestResponse response = new BloodRequestResponse();
-        response.setId(requestId);
-        response.setFullName("John Doe");
-        response.setReason("Urgent Surgery");
+                BloodRequestResponse response = new BloodRequestResponse();
+                response.setId(requestId);
+                response.setFullName("John Doe");
+                response.setReason("Urgent Surgery");
 
-        when(bloodRequestService.getRequestById(requestId)).thenReturn(response);
+                when(bloodRequestService.getRequestById(requestId)).thenReturn(response);
 
-        mockMvc.perform(get("/api/bloodrequests/{id}", requestId)
-                .with(user("admin").roles("ADMIN")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.fullName").value("John Doe"))
-                .andExpect(jsonPath("$.reason").value("Urgent Surgery"));
+                mockMvc.perform(get("/api/bloodrequests/{id}", requestId)
+                                .with(user("admin").roles("ADMIN")))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$.id").value(1))
+                                .andExpect(jsonPath("$.fullName").value("John Doe"))
+                                .andExpect(jsonPath("$.reason").value("Urgent Surgery"));
 
-        verify(bloodRequestService, times(1)).getRequestById(requestId);
-    }
+                verify(bloodRequestService, times(1)).getRequestById(requestId);
+        }
 
-    // =========================================================
-    // GET REQUEST BY ID - NOT FOUND
-    // =========================================================
+        // =========================================================
+        // GET REQUEST BY ID - NOT FOUND
+        // =========================================================
 
-    @Test
-    void getRequestById_shouldReturn404_whenRequestDoesNotExist() throws Exception {
+        @Test
+        void getRequestById_shouldReturn404_whenRequestDoesNotExist() throws Exception {
 
-        Long requestId = 999L;
+                Long requestId = 999L;
 
-        when(bloodRequestService.getRequestById(requestId))
-                .thenThrow(new RuntimeException("Blood request not found with ID: " + requestId));
+                when(bloodRequestService.getRequestById(requestId))
+                                .thenThrow(new RuntimeException("Blood request not found with ID: " + requestId));
 
-        mockMvc.perform(get("/api/bloodrequests/{id}", requestId)
-                .with(user("admin").roles("ADMIN")))
-                .andExpect(status().isNotFound());
+                mockMvc.perform(get("/api/bloodrequests/{id}", requestId)
+                                .with(user("admin").roles("ADMIN")))
+                                .andExpect(status().isNotFound());
 
-        verify(bloodRequestService, times(1)).getRequestById(requestId);
-    }
+                verify(bloodRequestService, times(1)).getRequestById(requestId);
+        }
 
-    // =========================================================
-    // GET REQUEST BY ID - INVALID ID
-    // =========================================================
+        // =========================================================
+        // GET REQUEST BY ID - INVALID ID
+        // =========================================================
 
-    @Test
-    void getRequestById_shouldReturn400_whenIdIsInvalid() throws Exception {
+        @Test
+        void getRequestById_shouldReturn400_whenIdIsInvalid() throws Exception {
 
-        mockMvc.perform(get("/api/bloodrequests/abc")
-                .with(user("admin").roles("ADMIN")))
-                .andExpect(status().isBadRequest());
+                mockMvc.perform(get("/api/bloodrequests/abc")
+                                .with(user("admin").roles("ADMIN")))
+                                .andExpect(status().isBadRequest());
 
-        verify(bloodRequestService, times(0)).getRequestById(any());
-    }
+                verify(bloodRequestService, times(0)).getRequestById(any());
+        }
 
-    // =========================================================
-    // CREATE BLOOD REQUEST - SUCCESS
-    // =========================================================
+        // =========================================================
+        // CREATE BLOOD REQUEST - SUCCESS
+        // =========================================================
 
-    @Test
-    void createRequest_shouldReturn201_whenCreationIsSuccessful() throws Exception {
+        @Test
+        void createRequest_shouldReturn201_whenCreationIsSuccessful() throws Exception {
 
-        BloodRequestRequest request = new BloodRequestRequest();
-        request.setEmail("john@example.com");
-        request.setBloodGroup(BloodGroup.O_POSITIVE);
-        request.setUnitsRequired(2);
-        request.setReason("Emergency");
+                BloodRequestRequest request = new BloodRequestRequest();
+                request.setEmail("john@example.com");
+                request.setBloodGroup(BloodGroup.O_POSITIVE);
+                request.setUnitsRequired(2);
+                request.setReason("Emergency");
 
-        doNothing().when(bloodRequestService).saveRequest(any(BloodRequestRequest.class));
+                doNothing().when(bloodRequestService).saveRequest(any(BloodRequestRequest.class));
 
-        mockMvc.perform(post("/api/bloodrequests")
-                .with(user("admin").roles("ADMIN"))
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("Blood Request Submitted Successfully"));
+                mockMvc.perform(post("/api/bloodrequests")
+                                .with(user("admin").roles("ADMIN"))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andExpect(content().string("Blood Request Submitted Successfully"));
 
-        verify(bloodRequestService, times(1)).saveRequest(any(BloodRequestRequest.class));
-    }
+                verify(bloodRequestService, times(1)).saveRequest(any(BloodRequestRequest.class));
+        }
 
-    // =========================================================
-    // APPROVE REQUEST - SUCCESS
-    // =========================================================
+        // =========================================================
+        // APPROVE REQUEST - SUCCESS
+        // =========================================================
 
-    @Test
-    void approveRequest_shouldReturn200_whenApprovalIsSuccessful() throws Exception {
+        @Test
+        void approveRequest_shouldReturn200_whenApprovalIsSuccessful() throws Exception {
 
-        Long requestId = 1L;
+                Long requestId = 1L;
 
-        doNothing().when(bloodRequestService).approveRequest(requestId);
+                doNothing().when(bloodRequestService).approveRequest(requestId);
 
-        mockMvc.perform(put("/api/bloodrequests/{id}/approve", requestId)
-                .with(user("admin").roles("ADMIN"))
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Blood Request Approved Successfully"));
+                mockMvc.perform(put("/api/bloodrequests/{id}/approve", requestId)
+                                .with(user("admin").roles("ADMIN"))
+                                .with(csrf()))
+                                .andExpect(status().isOk())
+                                .andExpect(content().string("Blood Request Approved Successfully"));
 
-        verify(bloodRequestService, times(1)).approveRequest(requestId);
-    }
+                verify(bloodRequestService, times(1)).approveRequest(requestId);
+        }
 
-    // =========================================================
-    // APPROVE REQUEST - NOT FOUND
-    // =========================================================
+        // =========================================================
+        // APPROVE REQUEST - NOT FOUND
+        // =========================================================
 
-    @Test
-    void approveRequest_shouldReturn404_whenRequestDoesNotExist() throws Exception {
+        @Test
+        void approveRequest_shouldReturn404_whenRequestDoesNotExist() throws Exception {
 
-        Long requestId = 999L;
+                Long requestId = 999L;
 
-        doThrow(new RuntimeException("Blood request not found"))
-                .when(bloodRequestService).approveRequest(requestId);
+                doThrow(new RuntimeException("Blood request not found"))
+                                .when(bloodRequestService).approveRequest(requestId);
 
-        mockMvc.perform(put("/api/bloodrequests/{id}/approve", requestId)
-                .with(user("admin").roles("ADMIN"))
-                .with(csrf()))
-                .andExpect(status().isNotFound());
+                mockMvc.perform(put("/api/bloodrequests/{id}/approve", requestId)
+                                .with(user("admin").roles("ADMIN"))
+                                .with(csrf()))
+                                .andExpect(status().isNotFound());
 
-        verify(bloodRequestService, times(1)).approveRequest(requestId);
-    }
+                verify(bloodRequestService, times(1)).approveRequest(requestId);
+        }
 
-    // =========================================================
-    // REJECT REQUEST - SUCCESS
-    // =========================================================
+        // =========================================================
+        // REJECT REQUEST - SUCCESS
+        // =========================================================
 
-    @Test
-    void rejectRequest_shouldReturn200_whenRejectionIsSuccessful() throws Exception {
+        @Test
+        void rejectRequest_shouldReturn200_whenRejectionIsSuccessful() throws Exception {
 
-        Long requestId = 1L;
+                Long requestId = 1L;
 
-        doNothing().when(bloodRequestService).rejectRequest(requestId);
+                doNothing().when(bloodRequestService).rejectRequest(requestId);
 
-        mockMvc.perform(put("/api/bloodrequests/{id}/reject", requestId)
-                .with(user("admin").roles("ADMIN"))
-                .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Blood Request Rejected Successfully"));
+                mockMvc.perform(put("/api/bloodrequests/{id}/reject", requestId)
+                                .with(user("admin").roles("ADMIN"))
+                                .with(csrf()))
+                                .andExpect(status().isOk())
+                                .andExpect(content().string("Blood Request Rejected Successfully"));
 
-        verify(bloodRequestService, times(1)).rejectRequest(requestId);
-    }
+                verify(bloodRequestService, times(1)).rejectRequest(requestId);
+        }
 
-    // =========================================================
-    // REJECT REQUEST - NOT FOUND
-    // =========================================================
+        // =========================================================
+        // REJECT REQUEST - NOT FOUND
+        // =========================================================
 
-    @Test
-    void rejectRequest_shouldReturn404_whenRequestDoesNotExist() throws Exception {
+        @Test
+        void rejectRequest_shouldReturn404_whenRequestDoesNotExist() throws Exception {
 
-        Long requestId = 999L;
+                Long requestId = 999L;
 
-        doThrow(new RuntimeException("Blood request not found"))
-                .when(bloodRequestService).rejectRequest(requestId);
+                doThrow(new RuntimeException("Blood request not found"))
+                                .when(bloodRequestService).rejectRequest(requestId);
 
-        mockMvc.perform(put("/api/bloodrequests/{id}/reject", requestId)
-                .with(user("admin").roles("ADMIN"))
-                .with(csrf()))
-                .andExpect(status().isNotFound());
+                mockMvc.perform(put("/api/bloodrequests/{id}/reject", requestId)
+                                .with(user("admin").roles("ADMIN"))
+                                .with(csrf()))
+                                .andExpect(status().isNotFound());
 
-        verify(bloodRequestService, times(1)).rejectRequest(requestId);
-    }
+                verify(bloodRequestService, times(1)).rejectRequest(requestId);
+        }
 }

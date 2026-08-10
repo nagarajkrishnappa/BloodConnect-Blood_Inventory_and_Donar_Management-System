@@ -25,8 +25,11 @@ import com.example.demo.repository.DonorRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @SpringBootTest
 @Testcontainers
+@ActiveProfiles("test")
 class DonorRepositoryTestcontainersTest {
 
     @Container
@@ -58,6 +61,10 @@ class DonorRepositoryTestcontainersTest {
         registry.add(
                 "spring.jpa.hibernate.ddl-auto",
                 () -> "create-drop");
+
+        registry.add(
+                "spring.jpa.database-platform",
+                () -> "org.hibernate.dialect.MySQLDialect");
     }
 
     @Autowired

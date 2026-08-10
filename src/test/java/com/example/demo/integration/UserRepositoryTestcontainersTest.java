@@ -16,8 +16,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @SpringBootTest
 @Testcontainers
+@ActiveProfiles("test")
 class UserRepositoryTestcontainersTest {
 
     @Container
@@ -49,6 +52,10 @@ class UserRepositoryTestcontainersTest {
         registry.add(
                 "spring.jpa.hibernate.ddl-auto",
                 () -> "create-drop");
+
+        registry.add(
+                "spring.jpa.database-platform",
+                () -> "org.hibernate.dialect.MySQLDialect");
     }
 
     @Autowired

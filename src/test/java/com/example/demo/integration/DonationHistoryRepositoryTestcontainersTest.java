@@ -29,8 +29,11 @@ import com.example.demo.repository.DonorRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @SpringBootTest
 @Testcontainers
+@ActiveProfiles("test")
 class DonationHistoryRepositoryTestcontainersTest {
 
     @Container
@@ -46,6 +49,7 @@ class DonationHistoryRepositoryTestcontainersTest {
         registry.add("spring.datasource.password", mysql::getPassword);
         registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQLDialect");
     }
 
     @Autowired

@@ -22,8 +22,11 @@ import com.example.demo.entity.BloodStock;
 import com.example.demo.enums.BloodGroup;
 import com.example.demo.repository.BloodStockRepository;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @SpringBootTest
 @Testcontainers
+@ActiveProfiles("test")
 class BloodStockRepositoryTestcontainersTest {
 
     @Container
@@ -39,6 +42,7 @@ class BloodStockRepositoryTestcontainersTest {
         registry.add("spring.datasource.password", mysql::getPassword);
         registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQLDialect");
     }
 
     @Autowired

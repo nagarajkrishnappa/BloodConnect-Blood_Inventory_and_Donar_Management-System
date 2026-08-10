@@ -24,8 +24,11 @@ import com.example.demo.enums.BloodGroup;
 import com.example.demo.repository.BloodStockRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class BloodStockIntegrationTest {
 
     @Autowired
