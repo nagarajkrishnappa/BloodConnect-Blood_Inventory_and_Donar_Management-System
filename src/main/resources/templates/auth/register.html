@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blood Bank - Register</title>
+
+<link rel="stylesheet" th:href="@{/css/dashboard.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.register-container {
+    width: 440px;
+    margin: 60px auto;
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+}
+
+.register-container h2 {
+    color: #c62828;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #c62828;
+    outline: none;
+}
+
+.error {
+    color: #c62828;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 4px;
+    display: block;
+}
+
+.btn-register {
+    width: 100%;
+    padding: 12px;
+    background: #c62828;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 25px;
+}
+
+.btn-register:hover {
+    background: #8e0000;
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #ffcdd2;
+    text-align: center;
+    font-weight: bold;
+}
+
+.link-box {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.link-box a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-box a:hover {
+    text-decoration: underline;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="register-container">
+
+    <h2>🩸 User Registration</h2>
+
+    <!-- Error message alert -->
+    <div th:if="${errorMessage}" class="alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+
+        <label><i class="fa-solid fa-user"></i> Full Name</label>
+        <input type="text" th:field="*{fullName}" placeholder="Enter Full Name">
+        <span class="error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+
+        <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+        <input type="email" th:field="*{email}" placeholder="Enter Email Address">
+        <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+
+        <label><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" th:field="*{password}" placeholder="At least 6 characters">
+        <span class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+
+        <label><i class="fa-solid fa-phone"></i> Phone Number</label>
+        <input type="text" th:field="*{phone}" placeholder="Enter 10 Digit Phone Number">
+        <span class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+
+        <button type="submit" class="btn-register">
+            <i class="fa-solid fa-user-plus"></i> Register
+        </button>
+
+    </form>
+
+    <div class="link-box">
+        <a th:href="@{/login}">Already have an account? Login here</a>
+    </div>
+
+</div>
+
+</body>
+
+</html>

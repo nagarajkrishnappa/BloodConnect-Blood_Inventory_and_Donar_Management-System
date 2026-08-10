@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+
+<div th:fragment="sidebar" class="sidebar">
+
+    <ul>
+
+        <li><a th:href="@{/user/dashboard}">Dashboard</a></li>
+
+        <li sec:authorize="hasRole('USER')">
+            <a th:href="@{/user/donor/profile}">My Donor Profile</a>
+        </li>
+
+        <li sec:authorize="hasRole('USER')">
+            <a th:href="@{/user/donor/register}">Become Donor</a>
+        </li>
+
+        <li sec:authorize="hasRole('USER')">
+            <a th:href="@{/user/donors}">Find Blood Donors</a>
+        </li>
+
+        <li sec:authorize="hasRole('USER')">
+            <a th:href="@{/user/request-blood}">Request Blood</a>
+        </li>
+
+        <li sec:authorize="hasRole('USER')">
+            <a th:href="@{/user/my-requests}">My Requests</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/dashboard}">Admin Dashboard</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/users}">Manage Users</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/donors}">Manage Donors</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/bloodstock/list}">Blood Stock</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/bloodrequests}">Blood Requests</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/donations/list}">Donation History</a>
+        </li>
+
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/auditlogs}">📋 Audit Logs</a>
+        </li>
+
+        <li>
+            <a th:href="@{/logout}">Logout</a>
+        </li>
+
+    </ul>
+
+</div>
+
+</body>
+</html>

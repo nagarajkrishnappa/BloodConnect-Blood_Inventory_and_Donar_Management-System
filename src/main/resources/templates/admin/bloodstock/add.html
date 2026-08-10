@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Add Blood Stock</title>
+
+<link rel="stylesheet" th:href="@{/css/style.css}">
+
+<style>
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f9;
+}
+
+.container{
+
+    width:650px;
+    margin:40px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.2);
+
+}
+
+h2{
+
+    text-align:center;
+    color:#c62828;
+    margin-bottom:25px;
+
+}
+
+label{
+
+    font-weight:bold;
+
+}
+
+input,select{
+
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:20px;
+    box-sizing:border-box;
+
+}
+
+button{
+
+    width:100%;
+    padding:12px;
+    background:#c62828;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:16px;
+
+}
+
+button:hover{
+
+    background:#8e0000;
+
+}
+
+.error{
+
+    background:#ffebee;
+    color:#b71c1c;
+    padding:10px;
+    border-radius:5px;
+    margin-bottom:20px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Add Blood Stock</h2>
+
+<div
+th:if="${errorMessage}"
+class="error"
+th:text="${errorMessage}">
+</div>
+
+<form
+th:action="@{/admin/bloodstock/save}"
+th:object="${bloodStockRequest}"
+method="post">
+
+<label>Blood Group</label>
+
+<select
+th:field="*{bloodGroup}"
+required>
+
+<option value="">
+Select Blood Group
+</option>
+
+<option
+th:each="group:${bloodGroups}"
+th:value="${group}"
+th:text="${group.value}">
+</option>
+
+</select>
+
+<label>Available Units</label>
+
+<input
+type="number"
+th:field="*{units}"
+min="0"
+required>
+
+<button type="submit">
+
+Save Blood Stock
+
+</button>
+
+</form>
+
+</div>
+
+</body>
+
+</html>

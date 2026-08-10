@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Available Blood Donors')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+        <div>
+            <h1 style="margin:0; color:#b30000;">🩸 Available Blood Donors</h1>
+            <p style="margin-top:5px; color:#666;">View, search, sort, filter, and paginate registered blood donors.</p>
+        </div>
+
+        <!-- Search & Controls Bar -->
+        <form th:action="@{/user/donors}" method="get" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <input type="hidden" name="sortBy" th:value="${sortBy}">
+            <input type="hidden" name="direction" th:value="${direction}">
+
+            <input type="text" name="keyword" placeholder="Search by name or city..." th:value="${keyword}"
+                   style="padding:9px 14px; width:220px; border:1px solid #ccc; border-radius:6px; font-size:0.95em;">
+
+            <label style="font-weight:bold; color:#555; font-size:0.9em; margin-left:5px;">Show:</label>
+            <select name="size" onchange="this.form.submit()" style="padding:9px 10px; border:1px solid #ccc; border-radius:6px; font-size:0.9em; background:white;">
+                <option value="5" th:selected="${size == 5}">5</option>
+                <option value="10" th:selected="${size == 10}">10</option>
+                <option value="25" th:selected="${size == 25}">25</option>
+                <option value="50" th:selected="${size == 50}">50</option>
+            </select>
+
+            <button type="submit" 
+                    style="background:#b30000; color:white; border:none; padding:9px 16px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
+            <a th:if="${(keyword != null && !keyword.isBlank()) || size != 5 || sortBy != 'id' || direction != 'asc'}" th:href="@{/user/donors}"
+               style="background:#666; color:white; text-decoration:none; padding:9px 14px; border-radius:6px; font-weight:bold; font-size:0.9em;">
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #e0e0e0; margin-bottom:25px;">
+
+    <!-- Results Table Card -->
+    <div style="background:white; padding:25px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <thead>
+                <tr style="background:#b30000; color:white; font-size:0.95em; text-transform:uppercase; letter-spacing:0.5px;">
+                    <th style="padding:14px 16px; border-top-left-radius:6px;">
+                        <a th:href="@{/user/donors(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='user.fullName', direction=${sortBy == 'user.fullName' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            Full Name <i th:class="${sortBy == 'user.fullName' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">
+                        <a th:href="@{/user/donors(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='user.email', direction=${sortBy == 'user.email' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            Email <i th:class="${sortBy == 'user.email' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">Phone</th>
+                    <th style="padding:14px 16px;">
+                        <a th:href="@{/user/donors(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='bloodGroup', direction=${sortBy == 'bloodGroup' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            Blood Group <i th:class="${sortBy == 'bloodGroup' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">
+                        <a th:href="@{/user/donors(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='city', direction=${sortBy == 'city' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            City <i th:class="${sortBy == 'city' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px; border-top-right-radius:6px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="donor : ${donors}" style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:14px 16px; font-weight:600; color:#333;" th:text="${donor.fullName}">John Doe</td>
+                    <td style="padding:14px 16px; color:#555;" th:text="${donor.email}">john@example.com</td>
+                    <td style="padding:14px 16px; color:#555;" th:text="${donor.phone}">1234567890</td>
+                    <td style="padding:14px 16px;">
+                        <span style="background:#ffebee; color:#c62828; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;" th:text="${donor.bloodGroup}">O+</span>
+                    </td>
+                    <td style="padding:14px 16px; color:#555;" th:text="${donor.city}">New York</td>
+                    <td style="padding:14px 16px;">
+                        <span th:if="${donor.available}" style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;">Available</span>
+                        <span th:unless="${donor.available}" style="background:#ffebee; color:#c62828; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;">Unavailable</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(donors)}">
+                    <td colspan="6" style="padding:30px; text-align:center; color:#888; font-size:1.05em;">
+                        <i class="fa-solid fa-users-slash" style="font-size:2em; margin-bottom:10px; display:block; color:#ccc;"></i>
+                        No donors found matching your search criteria.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Enterprise Pagination Footer Bar -->
+        <div th:if="${totalPages > 1}" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:15px; border-top:1px solid #eee; flex-wrap:wrap; gap:10px;">
+            <div style="color:#666; font-size:0.9em;">
+                Showing <strong th:text="${currentPage * size + 1}">1</strong> to 
+                <strong th:text="${(currentPage + 1) * size > totalItems ? totalItems : (currentPage + 1) * size}">5</strong> 
+                of <strong th:text="${totalItems}">10</strong> donors
+            </div>
+            
+            <div style="display:flex; gap:6px; align-items:center;">
+                <!-- Previous Button -->
+                <a th:if="${currentPage > 0}" 
+                   th:href="@{/user/donors(page=${currentPage - 1}, size=${size}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   style="padding:6px 14px; background:#f0f0f0; color:#333; text-decoration:none; border-radius:4px; font-size:0.9em; font-weight:bold;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </a>
+                <span th:unless="${currentPage > 0}" style="padding:6px 14px; background:#f5f5f5; color:#ccc; border-radius:4px; font-size:0.9em; font-weight:bold; cursor:not-allowed;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </span>
+
+                <!-- Page Number Status -->
+                <span style="padding:6px 12px; font-size:0.9em; font-weight:bold; color:#b30000;">
+                    Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">5</span>
+                </span>
+
+                <!-- Next Button -->
+                <a th:if="${currentPage + 1 < totalPages}" 
+                   th:href="@{/user/donors(page=${currentPage + 1}, size=${size}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   style="padding:6px 14px; background:#b30000; color:white; text-decoration:none; border-radius:4px; font-size:0.9em; font-weight:bold;">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <span th:unless="${currentPage + 1 < totalPages}" style="padding:6px 14px; background:#f5f5f5; color:#ccc; border-radius:4px; font-size:0.9em; font-weight:bold; cursor:not-allowed;">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

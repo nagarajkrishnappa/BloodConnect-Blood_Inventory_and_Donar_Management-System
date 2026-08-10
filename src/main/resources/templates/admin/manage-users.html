@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Manage Users')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <h1>👤 System Users Management</h1>
+    <p>View and manage all registered system users.</p>
+
+    <hr>
+
+    <div style="background:white; padding:20px; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.15); margin-top:20px;">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <thead>
+                <tr style="background:#b30000; color:white;">
+                    <th style="padding:12px;">ID</th>
+                    <th style="padding:12px;">Full Name</th>
+                    <th style="padding:12px;">Email</th>
+                    <th style="padding:12px;">Phone</th>
+                    <th style="padding:12px;">Role</th>
+                    <th style="padding:12px;">Enabled</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users}" style="border-bottom:1px solid #eee;">
+                    <td style="padding:12px;" th:text="${user.id}">1</td>
+                    <td style="padding:12px;" th:text="${user.fullName}">John Doe</td>
+                    <td style="padding:12px;" th:text="${user.email}">john@example.com</td>
+                    <td style="padding:12px;" th:text="${user.phone != null ? user.phone : 'N/A'}">1234567890</td>
+                    <td style="padding:12px;">
+                        <span style="background:#e3f2fd; color:#1565c0; font-weight:bold; padding:4px 8px; border-radius:12px;" 
+                              th:text="${user.role != null ? user.role.roleName : 'USER'}">USER</span>
+                    </td>
+                    <td style="padding:12px;">
+                        <span th:if="${user.enabled}" style="color:green; font-weight:bold;">Yes</span>
+                        <span th:unless="${user.enabled}" style="color:red; font-weight:bold;">No</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(users)}">
+                    <td colspan="6" style="padding:20px; text-align:center; color:gray;">No users found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

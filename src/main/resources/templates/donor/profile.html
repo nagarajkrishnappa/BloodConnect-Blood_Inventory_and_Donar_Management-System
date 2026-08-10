@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('My Donor Profile')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <div style="max-width:700px; background:white; padding:30px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.15); margin: 0 auto;">
+
+        <h2 style="color:#c62828; margin-top:0; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+            <i class="fa-solid fa-id-card"></i> My Donor Profile
+        </h2>
+
+        <table style="width:100%; border-collapse:collapse; margin-top: 20px;">
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #eee; font-weight:bold; width:35%;">Full Name</td>
+                <td style="padding:12px; border-bottom:1px solid #eee;" th:text="${donor.fullName}">-</td>
+            </tr>
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #eee; font-weight:bold;">Email Address</td>
+                <td style="padding:12px; border-bottom:1px solid #eee;" th:text="${donor.email}">-</td>
+            </tr>
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #eee; font-weight:bold;">Phone Number</td>
+                <td style="padding:12px; border-bottom:1px solid #eee;" th:text="${donor.phone}">-</td>
+            </tr>
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #eee; font-weight:bold;">Blood Group</td>
+                <td style="padding:12px; border-bottom:1px solid #eee;">
+                    <span style="background:#ffebee; color:#c62828; font-weight:bold; padding:4px 12px; border-radius:15px;" th:text="${donor.bloodGroup}">-</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #eee; font-weight:bold;">City</td>
+                <td style="padding:12px; border-bottom:1px solid #eee;" th:text="${donor.city}">-</td>
+            </tr>
+            <tr>
+                <td style="padding:12px; border-bottom:1px solid #eee; font-weight:bold;">Availability Status</td>
+                <td style="padding:12px; border-bottom:1px solid #eee;">
+                    <span th:if="${donor.available}" style="color:#2e7d32; font-weight:bold;">Available to Donate</span>
+                    <span th:unless="${donor.available}" style="color:#c62828; font-weight:bold;">Not Available</span>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Action Buttons -->
+        <div style="margin-top:30px; display:flex; gap:15px; flex-wrap:wrap;">
+            <a th:href="@{/user/donor/edit}" class="btn btn-primary">
+                <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+            </a>
+
+            <a th:href="@{/user/donor/delete}"
+               onclick="return confirm('Are you sure you want to delete your donor profile?')"
+               class="btn btn-danger">
+                <i class="fa-solid fa-trash"></i> Delete Profile
+            </a>
+
+            <a th:href="@{/user/dashboard}" class="btn" style="background:#6c757d; color:white;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

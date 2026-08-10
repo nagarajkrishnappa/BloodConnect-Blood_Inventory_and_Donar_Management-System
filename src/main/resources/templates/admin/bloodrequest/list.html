@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Blood Request Management')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+        <div>
+            <h1 style="margin:0; color:#b30000;">📋 Blood Request Management</h1>
+            <p style="margin-top:5px; color:#666;">Review, search, sort, and process user requests for blood units.</p>
+        </div>
+
+        <!-- Search & Control Bar -->
+        <form th:action="@{/admin/bloodrequests}" method="get" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <input type="hidden" name="sortBy" th:value="${sortBy}">
+            <input type="hidden" name="direction" th:value="${direction}">
+
+            <input type="text" name="keyword" placeholder="Search by requester name..." th:value="${keyword}"
+                   style="padding:9px 14px; width:220px; border:1px solid #ccc; border-radius:6px; font-size:0.95em;">
+
+            <label style="font-weight:bold; color:#555; font-size:0.9em; margin-left:5px;">Show:</label>
+            <select name="size" onchange="this.form.submit()" style="padding:9px 10px; border:1px solid #ccc; border-radius:6px; font-size:0.9em; background:white;">
+                <option value="5" th:selected="${size == 5}">5</option>
+                <option value="10" th:selected="${size == 10}">10</option>
+                <option value="25" th:selected="${size == 25}">25</option>
+            </select>
+
+            <button type="submit" 
+                    style="background:#b30000; color:white; border:none; padding:9px 16px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
+            <a th:if="${(keyword != null && !keyword.isBlank()) || size != 5 || sortBy != 'id' || direction != 'asc'}" th:href="@{/admin/bloodrequests}"
+               style="background:#666; color:white; text-decoration:none; padding:9px 14px; border-radius:6px; font-weight:bold; font-size:0.9em;">
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #e0e0e0; margin-bottom:25px;">
+
+    <!-- Success / Error Alert Messages -->
+    <div th:if="${successMessage}" style="background:#e8f5e9; color:#2e7d32; padding:15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border-left:5px solid #2e7d32; display:flex; align-items:center; gap:10px;">
+        <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" style="background:#ffebee; color:#c62828; padding:15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border-left:5px solid #c62828; display:flex; align-items:center; gap:10px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Requests Table Card -->
+    <div style="background:white; padding:25px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <thead>
+                <tr style="background:#b30000; color:white; font-size:0.95em; text-transform:uppercase; letter-spacing:0.5px;">
+                    <th style="padding:14px 16px; border-top-left-radius:6px;">
+                        <a th:href="@{/admin/bloodrequests(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='id', direction=${sortBy == 'id' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            ID <i th:class="${sortBy == 'id' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">Requester Name</th>
+                    <th style="padding:14px 16px;">Email</th>
+                    <th style="padding:14px 16px;">Blood Group</th>
+                    <th style="padding:14px 16px;">
+                        <a th:href="@{/admin/bloodrequests(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='unitsRequired', direction=${sortBy == 'unitsRequired' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            Units <i th:class="${sortBy == 'unitsRequired' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">Reason</th>
+                    <th style="padding:14px 16px;">Status</th>
+                    <th style="padding:14px 16px; border-top-right-radius:6px; text-align:center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="request : ${requests}" style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:14px 16px; font-weight:bold; color:#555;" th:text="${'#' + request.id}">#1</td>
+                    <td style="padding:14px 16px; font-weight:600; color:#333;" th:text="${request.fullName}">John Doe</td>
+                    <td style="padding:14px 16px; color:#555;" th:text="${request.email}">john@example.com</td>
+                    <td style="padding:14px 16px;">
+                        <span style="background:#ffebee; color:#c62828; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;"
+                              th:text="${request.bloodGroup != null ? request.bloodGroup.value : 'N/A'}">O+</span>
+                    </td>
+                    <td style="padding:14px 16px; font-weight:bold; color:#2e7d32;" th:text="${request.unitsRequired}">2</td>
+                    <td style="padding:14px 16px; color:#555;" th:text="${request.reason}">Emergency</td>
+                    <td style="padding:14px 16px;">
+                        <span th:if="${request.status != null && request.status.name() == 'APPROVED'}" style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;">Approved</span>
+                        <span th:if="${request.status != null && request.status.name() == 'REJECTED'}" style="background:#ffebee; color:#c62828; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;">Rejected</span>
+                        <span th:if="${request.status != null && request.status.name() == 'PENDING'}" style="background:#fff8e1; color:#f57f17; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.88em; display:inline-block;">Pending</span>
+                    </td>
+                    <td style="padding:14px 16px; text-align:center;">
+                        <div style="display:flex; justify-content:center; gap:8px;">
+                            <a th:if="${request.status == null || request.status.name() != 'APPROVED'}"
+                               th:href="@{/admin/bloodrequests/approve/{id}(id=${request.id})}"
+                               onclick="return confirm('Are you sure you want to approve this blood request?')"
+                               style="background:#2e7d32; color:white; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:0.85em; font-weight:bold;">
+                                <i class="fa-solid fa-check"></i> Approve
+                            </a>
+                            <a th:if="${request.status == null || request.status.name() != 'REJECTED'}"
+                               th:href="@{/admin/bloodrequests/reject/{id}(id=${request.id})}"
+                               onclick="return confirm('Are you sure you want to reject this blood request?')"
+                               style="background:#c62828; color:white; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:0.85em; font-weight:bold;">
+                                <i class="fa-solid fa-xmark"></i> Reject
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(requests)}">
+                    <td colspan="8" style="padding:30px; text-align:center; color:#888; font-size:1.05em;">
+                        <i class="fa-solid fa-inbox" style="font-size:2em; margin-bottom:10px; display:block; color:#ccc;"></i>
+                        No blood requests found.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Enterprise Pagination Footer Bar -->
+        <div th:if="${totalPages > 1}" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:15px; border-top:1px solid #eee; flex-wrap:wrap; gap:10px;">
+            <div style="color:#666; font-size:0.9em;">
+                Showing <strong th:text="${currentPage * size + 1}">1</strong> to 
+                <strong th:text="${(currentPage + 1) * size > totalItems ? totalItems : (currentPage + 1) * size}">5</strong> 
+                of <strong th:text="${totalItems}">10</strong> requests
+            </div>
+            
+            <div style="display:flex; gap:6px; align-items:center;">
+                <!-- Previous Button -->
+                <a th:if="${currentPage > 0}" 
+                   th:href="@{/admin/bloodrequests(page=${currentPage - 1}, size=${size}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   style="padding:6px 14px; background:#f0f0f0; color:#333; text-decoration:none; border-radius:4px; font-size:0.9em; font-weight:bold;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </a>
+                <span th:unless="${currentPage > 0}" style="padding:6px 14px; background:#f5f5f5; color:#ccc; border-radius:4px; font-size:0.9em; font-weight:bold; cursor:not-allowed;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </span>
+
+                <!-- Page Number Status -->
+                <span style="padding:6px 12px; font-size:0.9em; font-weight:bold; color:#b30000;">
+                    Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">5</span>
+                </span>
+
+                <!-- Next Button -->
+                <a th:if="${currentPage + 1 < totalPages}" 
+                   th:href="@{/admin/bloodrequests(page=${currentPage + 1}, size=${size}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   style="padding:6px 14px; background:#b30000; color:white; text-decoration:none; border-radius:4px; font-size:0.9em; font-weight:bold;">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <span th:unless="${currentPage + 1 < totalPages}" style="padding:6px 14px; background:#f5f5f5; color:#ccc; border-radius:4px; font-size:0.9em; font-weight:bold; cursor:not-allowed;">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

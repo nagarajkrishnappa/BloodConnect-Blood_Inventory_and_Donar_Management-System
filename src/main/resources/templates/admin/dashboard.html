@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Admin Dashboard')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <h1>Admin Dashboard</h1>
+
+    <p>Welcome Administrator.</p>
+
+    <div class="dashboard-grid">
+
+        <!-- Users -->
+        <a th:href="@{/admin/users}" class="card-link">
+            <div class="card">
+                <h3>👤 Users</h3>
+                <p th:text="${dashboard.totalUsers}">0</p>
+            </div>
+        </a>
+
+        <!-- Donors -->
+        <a th:href="@{/admin/donors}" class="card-link">
+            <div class="card">
+                <h3>🩸 Donors</h3>
+                <p th:text="${dashboard.totalDonors}">0</p>
+            </div>
+        </a>
+
+        <!-- Blood Stock -->
+        <a th:href="@{/admin/bloodstock/list}" class="card-link">
+            <div class="card">
+                <h3>🩸 Blood Stock</h3>
+                <p>
+                    <span th:text="${dashboard.totalBloodUnits}">0</span>
+                    Units
+                </p>
+            </div>
+        </a>
+
+        <!-- Pending Requests -->
+        <a th:href="@{/admin/bloodrequests(status='PENDING')}" class="card-link">
+            <div class="card">
+                <h3>📄 Pending Requests</h3>
+                <p>
+                    <span th:text="${dashboard.pendingRequests}">0</span>
+                    Pending
+                </p>
+            </div>
+        </a>
+
+        <!-- Approved Requests -->
+        <a th:href="@{/admin/bloodrequests(status='APPROVED')}" class="card-link">
+            <div class="card">
+                <h3>✅ Approved Requests</h3>
+                <p th:text="${dashboard.approvedRequests}">0</p>
+            </div>
+        </a>
+
+        <!-- Rejected Requests -->
+        <a th:href="@{/admin/bloodrequests(status='REJECTED')}" class="card-link">
+            <div class="card">
+                <h3>❌ Rejected Requests</h3>
+                <p th:text="${dashboard.rejectedRequests}">0</p>
+            </div>
+        </a>
+
+        <!-- Total Donations -->
+        <a th:href="@{/admin/donations/list}" class="card-link">
+            <div class="card">
+                <h3>❤️ Total Donations</h3>
+                <p th:text="${dashboard.totalDonations}">0</p>
+            </div>
+        </a>
+
+        <!-- Record Donation -->
+        <a th:href="@{/admin/donations/add}" class="card-link">
+            <div class="card">
+                <h3>🩸 Record Donation</h3>
+                <p>Add New Donation</p>
+            </div>
+        </a>
+
+        <!-- Blood Request Management -->
+        <a th:href="@{/admin/bloodrequests}" class="card-link">
+            <div class="card">
+                <h3>📋 Manage Requests</h3>
+                <p>Approve / Reject</p>
+            </div>
+        </a>
+
+    </div>
+
+
+    <hr>
+
+<h2>Dashboard Analytics</h2>
+
+<div class="chart-container" style="width:700px;margin:auto;">
+
+    <canvas id="bloodStockChart"></canvas>
+
+</div>
+
+<br><br>
+
+<div class="chart-container" style="width:700px;margin:auto;">
+
+    <canvas id="requestChart"></canvas>
+
+</div>
+
+<br><br>
+
+<div class="chart-container" style="width:700px;margin:auto;">
+
+    <canvas id="donationChart"></canvas>
+
+</div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+fetch('/admin/dashboard/chart/bloodstock')
+
+.then(response => response.json())
+
+.then(data => {
+
+new Chart(document.getElementById("bloodStockChart"),{
+
+type:'bar',
+
+data:{
+
+labels:data.labels,
+
+datasets:[{
+
+label:'Blood Units',
+
+data:data.values
+
+}]
+
+}
+
+});
+
+});
+
+</script>
+<script>
+
+fetch('/admin/dashboard/chart/requests')
+
+.then(response=>response.json())
+
+.then(data=>{
+
+new Chart(document.getElementById("requestChart"),{
+
+type:'doughnut',
+
+data:{
+
+labels:data.labels,
+
+datasets:[{
+
+data:data.values
+
+}]
+
+}
+
+});
+
+});
+
+</script>
+<script>
+
+fetch('/admin/dashboard/chart/donations')
+
+.then(response=>response.json())
+
+.then(data=>{
+
+new Chart(document.getElementById("donationChart"),{
+
+type:'line',
+
+data:{
+
+labels:data.labels,
+
+datasets:[{
+
+label:'Donations',
+
+data:data.values
+
+}]
+
+}
+
+});
+
+});
+
+</script>
+</body>
+
+</html>

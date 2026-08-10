@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="navbar" class="navbar">
+
+    <div class="logo">
+        🩸 Blood Bank Management System
+    </div>
+
+    <div class="right-menu">
+
+        <span>
+            Welcome,
+            <strong th:text="${#authentication.name}">
+                User
+            </strong>
+        </span>
+
+        &nbsp;&nbsp;
+
+        <a th:href="@{/logout}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

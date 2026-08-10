@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Edit Donor Profile')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <div style="max-width:700px; background:white; padding:30px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.15); margin: 0 auto;">
+
+        <h2 style="color:#c62828; margin-top:0; border-bottom: 2px solid #eee; padding-bottom: 10px; text-align:center;">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Donor Profile
+        </h2>
+
+        <div th:if="${errorMessage}" style="background:#ffebee; color:#c62828; padding:12px; border-radius:5px; margin-bottom:20px; text-align:center;" th:text="${errorMessage}">
+        </div>
+
+        <form th:action="@{/user/donor/edit}" th:object="${donorRequest}" method="post">
+
+            <!-- Blood Group -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Blood Group</label>
+                <select th:field="*{bloodGroup}" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <option value="">-- Select Blood Group --</option>
+                    <option th:each="group : ${bloodGroups}" th:value="${group}" th:text="${group.value}"></option>
+                </select>
+            </div>
+
+            <!-- Gender -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Gender</label>
+                <select th:field="*{gender}" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <option value="">-- Select Gender --</option>
+                    <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender.value}"></option>
+                </select>
+            </div>
+
+            <!-- Date of Birth -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Date of Birth</label>
+                <input type="date" th:field="*{dateOfBirth}" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <!-- Address -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Address</label>
+                <input type="text" th:field="*{address}" placeholder="Enter Address" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <!-- City -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">City</label>
+                <input type="text" th:field="*{city}" placeholder="Enter City" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <!-- State -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">State</label>
+                <input type="text" th:field="*{state}" placeholder="Enter State" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <!-- Pincode -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Pincode</label>
+                <input type="text" th:field="*{pincode}" placeholder="Enter Pincode" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <!-- Weight -->
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Weight (kg)</label>
+                <input type="number" step="0.1" min="30" th:field="*{weight}" placeholder="Enter Weight" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <!-- Last Donation Date -->
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Last Donation Date</label>
+                <input type="date" th:field="*{lastDonationDate}" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <div style="display:flex; gap:15px; margin-top:20px;">
+                <button type="submit" class="btn btn-primary" style="flex:1; cursor:pointer;">
+                    <i class="fa-solid fa-floppy-disk"></i> Update Profile
+                </button>
+                <a th:href="@{/user/donor/profile}" class="btn" style="background:#6c757d; color:white; text-align:center; flex:1;">
+                    <i class="fa-solid fa-xmark"></i> Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

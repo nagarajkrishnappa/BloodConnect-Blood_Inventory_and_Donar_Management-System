@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Edit Blood Stock</title>
+
+<link rel="stylesheet" th:href="@{/css/style.css}">
+
+<style>
+
+body{
+
+font-family:Arial;
+background:#f4f4f4;
+
+}
+
+.container{
+
+width:650px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 8px gray;
+
+}
+
+input,select{
+
+width:100%;
+padding:10px;
+margin-bottom:20px;
+
+}
+
+button{
+
+width:100%;
+padding:12px;
+background:#2196f3;
+color:white;
+border:none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Edit Blood Stock</h2>
+
+<form
+th:action="@{'/admin/bloodstock/update/'+${id}}"
+th:object="${bloodStockRequest}"
+method="post">
+
+<label>Blood Group</label>
+
+<select
+th:field="*{bloodGroup}">
+
+<option
+th:each="group:${bloodGroups}"
+th:value="${group}"
+th:text="${group.value}">
+</option>
+
+</select>
+
+<label>Units</label>
+
+<input
+type="number"
+th:field="*{units}">
+
+<button>
+
+Update Blood Stock
+
+</button>
+
+</form>
+
+</div>
+
+</body>
+
+</html>

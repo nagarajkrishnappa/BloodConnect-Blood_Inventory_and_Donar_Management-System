@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Application Error')}"></head>
+
+<body style="background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0;">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div style="background: #ffffff; max-width: 520px; width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); border-top: 6px solid #b30000; padding: 40px 30px; text-align: center;">
+        
+        <!-- Error Warning Icon -->
+        <div style="width: 70px; height: 70px; background: #ffebee; color: #b30000; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 20px;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <!-- Title -->
+        <h2 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 26px; font-weight: 700;" 
+            th:text="${status != null ? 'Error ' + status : 'Error'}">Error</h2>
+
+        <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 20px auto; width: 80%;">
+
+        <!-- Exception Message -->
+        <div style="background: #fafafa; border: 1px solid #eeeeee; padding: 18px 20px; border-radius: 8px; margin-bottom: 30px;">
+            <p style="color: #4a5568; font-size: 16px; margin: 0; line-height: 1.6; font-weight: 500;" 
+               th:text="${errorMessage != null ? errorMessage : (message != null ? message : 'An unexpected error occurred. Please try again later.')}">
+                User not found.
+            </p>
+        </div>
+
+        <!-- Navigation Action Buttons -->
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="history.back()" 
+                    style="background: #6c757d; color: #ffffff; border: none; padding: 12px 24px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.3s ease;">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+
+            <a th:href="@{/}" 
+               style="background: #b30000; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-size: 15px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(179, 0, 0, 0.25); transition: background 0.3s ease;">
+                <i class="fa-solid fa-house"></i> Go to Home
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Donation History Log')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;">
+        <div>
+            <h1 style="margin:0; color:#b30000;">❤️ Donation History Log</h1>
+            <p style="margin-top:5px; color:#666;">View, search, sort, and manage all recorded blood donations.</p>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <!-- Search & Control Bar -->
+            <form th:action="@{/admin/donations/list}" method="get" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input type="hidden" name="sortBy" th:value="${sortBy}">
+                <input type="hidden" name="direction" th:value="${direction}">
+
+                <input type="text" name="keyword" placeholder="Search by donor name..." th:value="${keyword}"
+                       style="padding:9px 14px; width:220px; border:1px solid #ccc; border-radius:6px; font-size:0.95em;">
+
+                <label style="font-weight:bold; color:#555; font-size:0.9em; margin-left:5px;">Show:</label>
+                <select name="size" onchange="this.form.submit()" style="padding:9px 10px; border:1px solid #ccc; border-radius:6px; font-size:0.9em; background:white;">
+                    <option value="5" th:selected="${size == 5}">5</option>
+                    <option value="10" th:selected="${size == 10}">10</option>
+                    <option value="25" th:selected="${size == 25}">25</option>
+                </select>
+
+                <button type="submit" 
+                        style="background:#b30000; color:white; border:none; padding:9px 16px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+                <a th:if="${(keyword != null && !keyword.isBlank()) || size != 5 || sortBy != 'id' || direction != 'asc'}" th:href="@{/admin/donations/list}"
+                   style="background:#666; color:white; text-decoration:none; padding:9px 14px; border-radius:6px; font-weight:bold; font-size:0.9em;">
+                    Reset
+                </a>
+            </form>
+
+            <a th:href="@{/admin/donations/add}" 
+               style="background:#b30000; color:white; padding:9px 16px; border-radius:6px; text-decoration:none; font-weight:bold; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(179,0,0,0.3);">
+                <i class="fa-solid fa-plus"></i> Record New Donation
+            </a>
+        </div>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #e0e0e0; margin-bottom:25px;">
+
+    <!-- Success / Error Alert Messages -->
+    <div th:if="${successMessage}" style="background:#e8f5e9; color:#2e7d32; padding:15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border-left:5px solid #2e7d32; display:flex; align-items:center; gap:10px;">
+        <i class="fa-solid fa-circle-check"></i> <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" style="background:#ffebee; color:#c62828; padding:15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border-left:5px solid #c62828; display:flex; align-items:center; gap:10px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Table Card Container -->
+    <div style="background:white; padding:25px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+        <table style="width:100%; border-collapse:collapse; text-align:left;">
+            <thead>
+                <tr style="background:#b30000; color:white; font-size:0.95em; text-transform:uppercase; letter-spacing:0.5px;">
+                    <th style="padding:14px 16px; border-top-left-radius:6px;">
+                        <a th:href="@{/admin/donations/list(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='id', direction=${sortBy == 'id' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            ID <i th:class="${sortBy == 'id' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">Donor Name</th>
+                    <th style="padding:14px 16px;">Blood Group</th>
+                    <th style="padding:14px 16px;">
+                        <a th:href="@{/admin/donations/list(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='unitsDonated', direction=${sortBy == 'unitsDonated' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            Units Donated <i th:class="${sortBy == 'unitsDonated' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px;">
+                        <a th:href="@{/admin/donations/list(page=${currentPage}, size=${size}, keyword=${keyword}, sortBy='donationDate', direction=${sortBy == 'donationDate' && direction == 'asc' ? 'desc' : 'asc'})}" 
+                           style="color:white; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                            Donation Date <i th:class="${sortBy == 'donationDate' ? (direction == 'asc' ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down') : 'fa-solid fa-sort'}" style="font-size:0.85em;"></i>
+                        </a>
+                    </th>
+                    <th style="padding:14px 16px; border-top-right-radius:6px;">Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="history : ${donations}" style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:14px 16px; font-weight:bold; color:#555;" th:text="${'#' + history.id}">#1</td>
+                    <td style="padding:14px 16px; font-weight:600; color:#333;">
+                        <i class="fa-solid fa-user" style="color:#888; margin-right:6px;"></i>
+                        <span th:text="${history.donorName}">John Doe</span>
+                    </td>
+                    <td style="padding:14px 16px;">
+                        <span style="background:#ffebee; color:#c62828; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.9em; display:inline-block;" 
+                              th:text="${history.bloodGroup != null ? history.bloodGroup : 'N/A'}">O+</span>
+                    </td>
+                    <td style="padding:14px 16px;">
+                        <span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:5px 12px; border-radius:20px; font-size:0.9em; display:inline-block;">
+                            <i class="fa-solid fa-vial" style="margin-right:4px;"></i>
+                            <span th:text="${history.unitsDonated != null ? history.unitsDonated + ' Unit(s)' : '0 Units'}">1 Unit</span>
+                        </span>
+                    </td>
+                    <td style="padding:14px 16px; color:#555; font-size:0.95em;">
+                        <i class="fa-regular fa-calendar-days" style="color:#888; margin-right:6px;"></i>
+                        <span th:text="${history.donationDate != null ? #temporals.format(history.donationDate, 'dd-MM-yyyy') : 'N/A'}">01-01-2026</span>
+                    </td>
+                    <td style="padding:14px 16px; color:#666; font-style:italic;" 
+                        th:text="${history.remarks != null && !history.remarks.isBlank() ? history.remarks : '—'}">Regular Donor</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(donations)}">
+                    <td colspan="6" style="padding:30px; text-align:center; color:#888; font-size:1.05em;">
+                        <i class="fa-solid fa-inbox" style="font-size:2em; margin-bottom:10px; display:block; color:#ccc;"></i>
+                        No donation history records found.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Enterprise Pagination Footer Bar -->
+        <div th:if="${totalPages > 1}" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:15px; border-top:1px solid #eee; flex-wrap:wrap; gap:10px;">
+            <div style="color:#666; font-size:0.9em;">
+                Showing <strong th:text="${currentPage * size + 1}">1</strong> to 
+                <strong th:text="${(currentPage + 1) * size > totalItems ? totalItems : (currentPage + 1) * size}">5</strong> 
+                of <strong th:text="${totalItems}">10</strong> records
+            </div>
+            
+            <div style="display:flex; gap:6px; align-items:center;">
+                <!-- Previous Button -->
+                <a th:if="${currentPage > 0}" 
+                   th:href="@{/admin/donations/list(page=${currentPage - 1}, size=${size}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   style="padding:6px 14px; background:#f0f0f0; color:#333; text-decoration:none; border-radius:4px; font-size:0.9em; font-weight:bold;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </a>
+                <span th:unless="${currentPage > 0}" style="padding:6px 14px; background:#f5f5f5; color:#ccc; border-radius:4px; font-size:0.9em; font-weight:bold; cursor:not-allowed;">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </span>
+
+                <!-- Page Number Status -->
+                <span style="padding:6px 12px; font-size:0.9em; font-weight:bold; color:#b30000;">
+                    Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">5</span>
+                </span>
+
+                <!-- Next Button -->
+                <a th:if="${currentPage + 1 < totalPages}" 
+                   th:href="@{/admin/donations/list(page=${currentPage + 1}, size=${size}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   style="padding:6px 14px; background:#b30000; color:white; text-decoration:none; border-radius:4px; font-size:0.9em; font-weight:bold;">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <span th:unless="${currentPage + 1 < totalPages}" style="padding:6px 14px; background:#f5f5f5; color:#ccc; border-radius:4px; font-size:0.9em; font-weight:bold; cursor:not-allowed;">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

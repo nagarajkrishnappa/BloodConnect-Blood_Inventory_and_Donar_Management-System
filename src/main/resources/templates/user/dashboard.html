@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('User Dashboard')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <!-- Welcome Hero Banner -->
+    <div style="background:linear-gradient(135deg, #b30000 0%, #800000 100%); color:white; padding:25px 30px; border-radius:12px; margin-bottom:25px; box-shadow:0 4px 15px rgba(179,0,0,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+        <div>
+            <h1 style="margin:0; font-size:1.8em; font-weight:700; color:white;">Welcome to Blood Bank Portal</h1>
+            <p style="margin:6px 0 0 0; opacity:0.9; font-size:1em;">Access blood stock, request blood units, or manage your donor profile.</p>
+        </div>
+        <div>
+            <span th:if="${isDonor}" style="background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); color:white; padding:8px 16px; border-radius:20px; font-weight:bold; border:1px solid rgba(255,255,255,0.4); font-size:0.9em; display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-circle-check"></i> Registered Donor (<span th:text="${donor.bloodGroup}">O+</span>)
+            </span>
+            <span th:unless="${isDonor}" style="background:rgba(255,255,255,0.15); color:white; padding:8px 16px; border-radius:20px; font-weight:bold; font-size:0.9em; display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-user"></i> Registered User
+            </span>
+        </div>
+    </div>
+
+    <!-- Dashboard Cards Grid -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:22px;">
+
+        <!-- Available Blood Stock Card -->
+        <div style="background:white; padding:24px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; justify-content:space-between; border-top:4px solid #b30000;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#333; font-size:1.2em;">Available Blood</h3>
+                    <div style="background:#ffebee; color:#c62828; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+                        <i class="fa-solid fa-vial-circle-check"></i>
+                    </div>
+                </div>
+                <div style="font-size:2em; font-weight:bold; color:#b30000; margin-bottom:8px;" th:text="${totalAvailableUnits + ' Units'}">
+                    0 Units
+                </div>
+                <p style="color:#666; font-size:0.92em; margin:0 0 20px 0;">Check real-time blood stock availability across all blood groups.</p>
+            </div>
+            <a th:href="@{/user/bloodstock}" 
+               style="background:#b30000; color:white; text-decoration:none; padding:10px 16px; border-radius:6px; font-weight:bold; text-align:center; display:block; transition:background 0.3s ease;">
+                <i class="fa-solid fa-eye"></i> View Blood Stock
+            </a>
+        </div>
+
+        <!-- Request Blood Card -->
+        <div style="background:white; padding:24px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; justify-content:space-between; border-top:4px solid #1976d2;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#333; font-size:1.2em;">Request Blood</h3>
+                    <div style="background:#e3f2fd; color:#1565c0; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+                        <i class="fa-solid fa-hand-holding-medical"></i>
+                    </div>
+                </div>
+                <div style="font-size:1.1em; font-weight:600; color:#1565c0; margin-bottom:8px;">
+                    Emergency Support
+                </div>
+                <p style="color:#666; font-size:0.92em; margin:0 0 20px 0;">In urgent need of blood for medical emergencies? Submit a formal request.</p>
+            </div>
+            <a th:href="@{/user/request-blood}" 
+               style="background:#1976d2; color:white; text-decoration:none; padding:10px 16px; border-radius:6px; font-weight:bold; text-align:center; display:block; transition:background 0.3s ease;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Request
+            </a>
+        </div>
+
+        <!-- My Blood Requests Card -->
+        <div style="background:white; padding:24px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; justify-content:space-between; border-top:4px solid #2e7d32;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#333; font-size:1.2em;">My Requests</h3>
+                    <div style="background:#e8f5e9; color:#2e7d32; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                </div>
+                <div style="font-size:2em; font-weight:bold; color:#2e7d32; margin-bottom:8px;" th:text="${myRequestsCount + ' Request(s)'}">
+                    0 Requests
+                </div>
+                <p style="color:#666; font-size:0.92em; margin:0 0 20px 0;">Track the status of your submitted blood requests in real-time.</p>
+            </div>
+            <a th:href="@{/user/my-requests}" 
+               style="background:#2e7d32; color:white; text-decoration:none; padding:10px 16px; border-radius:6px; font-weight:bold; text-align:center; display:block; transition:background 0.3s ease;">
+                <i class="fa-solid fa-list-check"></i> Track Requests
+            </a>
+        </div>
+
+        <!-- Find Donors Card -->
+        <div style="background:white; padding:24px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; justify-content:space-between; border-top:4px solid #f57c00;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#333; font-size:1.2em;">Find Donors</h3>
+                    <div style="background:#fff3e0; color:#e65100; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                    </div>
+                </div>
+                <div style="font-size:1.1em; font-weight:600; color:#e65100; margin-bottom:8px;">
+                    Search Directory
+                </div>
+                <p style="color:#666; font-size:0.92em; margin:0 0 20px 0;">Search available blood donors filtered by blood group and city.</p>
+            </div>
+            <a th:href="@{/user/donors}" 
+               style="background:#f57c00; color:white; text-decoration:none; padding:10px 16px; border-radius:6px; font-weight:bold; text-align:center; display:block; transition:background 0.3s ease;">
+                <i class="fa-solid fa-magnifying-glass"></i> Search Donors
+            </a>
+        </div>
+
+        <!-- Donor Profile Card (If Donor) -->
+        <div th:if="${isDonor}" style="background:white; padding:24px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; justify-content:space-between; border-top:4px solid #8e24aa;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#333; font-size:1.2em;">My Donor Profile</h3>
+                    <div style="background:#f3e5f5; color:#7b1fa2; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <span style="background:#ffebee; color:#c62828; font-weight:bold; padding:4px 12px; border-radius:12px; font-size:0.9em;" 
+                          th:text="${'Group: ' + donor.bloodGroup}">Group: O+</span>
+                    <span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:4px 12px; border-radius:12px; font-size:0.9em; margin-left:6px;" 
+                          th:text="${donor.city}">City</span>
+                </div>
+                <p style="color:#666; font-size:0.92em; margin:0 0 20px 0;">Manage your registered blood donor details, availability, and profile.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:8px;">
+                    <a th:href="@{/user/donor/profile}" style="flex:1; background:#7b1fa2; color:white; text-decoration:none; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:0.88em; text-align:center;">
+                        <i class="fa-solid fa-user"></i> View Profile
+                    </a>
+                    <a th:href="@{/user/donor/edit}" style="flex:1; background:#2e7d32; color:white; text-decoration:none; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:0.88em; text-align:center;">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </a>
+                </div>
+                <a th:href="@{/user/donor/delete}"
+                   onclick="return confirm('Are you sure you want to delete your donor profile?')"
+                   style="background:#c62828; color:white; text-decoration:none; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:0.88em; text-align:center;">
+                    <i class="fa-solid fa-trash"></i> Delete Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- Become a Donor Card (If Not Donor) -->
+        <div th:unless="${isDonor}" style="background:white; padding:24px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; justify-content:space-between; border-top:4px solid #d32f2f;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h3 style="margin:0; color:#333; font-size:1.2em;">Become a Donor</h3>
+                    <div style="background:#ffebee; color:#c62828; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2em;">
+                        <i class="fa-solid fa-heart-circle-plus"></i>
+                    </div>
+                </div>
+                <div style="font-size:1.1em; font-weight:600; color:#c62828; margin-bottom:8px;">
+                    Save Lives
+                </div>
+                <p style="color:#666; font-size:0.92em; margin:0 0 20px 0;">Register yourself as an active blood donor to help people in urgent need.</p>
+            </div>
+            <a th:href="@{/user/donor/register}" 
+               style="background:#d32f2f; color:white; text-decoration:none; padding:10px 16px; border-radius:6px; font-weight:bold; text-align:center; display:block; transition:background 0.3s ease;">
+                <i class="fa-solid fa-user-plus"></i> Register as Donor
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

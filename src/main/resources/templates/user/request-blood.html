@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Request Blood')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <h1>📋 Request Blood</h1>
+    <p>Submit a request for blood units needed.</p>
+
+    <hr>
+
+    <div style="background:white; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.15); max-width:600px; margin-top:20px;">
+
+        <div th:if="${errorMessage}" style="background:#ffebee; color:#c62828; padding:12px; border-radius:5px; margin-bottom:20px; font-weight:bold; border-left:5px solid #c62828;">
+            <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="@{/user/request-blood}" th:object="${bloodRequest}" method="post">
+
+            <div style="margin-bottom:15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Blood Group</label>
+                <select th:field="*{bloodGroup}" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <option value="">-- Select Blood Group --</option>
+                    <option th:each="group : ${bloodGroups}"
+                            th:value="${group}"
+                            th:text="${group.value}">
+                    </option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Units Required</label>
+                <input type="number"
+                       min="1"
+                       max="10"
+                       th:field="*{unitsRequired}"
+                       placeholder="Enter required units (e.g. 2)"
+                       required
+                       style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;">
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="font-weight:bold; display:block; margin-bottom:5px;">Reason / Medical Note</label>
+                <textarea rows="4"
+                          th:field="*{reason}"
+                          placeholder="Provide details about why blood is required..."
+                          style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-danger" style="width:100%; padding:12px; font-size:1em; font-weight:bold; cursor:pointer;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Request
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

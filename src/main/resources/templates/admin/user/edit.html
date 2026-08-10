@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header('Edit User Account & Role')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1 style="margin:0; color:#b30000;">✏️ Edit User Account & Role</h1>
+            <p style="margin-top:5px; color:#666;">Update user details, phone number, email address, or change account role.</p>
+        </div>
+        <a th:href="@{/admin/users}" 
+           style="background:#666; color:white; padding:10px 18px; border-radius:6px; text-decoration:none; font-weight:bold; display:inline-flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-arrow-left"></i> Back to User List
+        </a>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #e0e0e0; margin-bottom:25px;">
+
+    <!-- Error Alert Message -->
+    <div th:if="${errorMessage}" style="background:#ffebee; color:#c62828; padding:15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border-left:5px solid #c62828; display:flex; align-items:center; gap:10px; max-width:700px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Form Container -->
+    <div style="max-width:700px; background:white; padding:30px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+
+        <form th:action="@{/admin/users/update/{id}(id=${userRequest.id})}" th:object="${userRequest}" method="post">
+
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Full Name -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:bold; margin-bottom:8px; color:#333;">
+                    <i class="fa-solid fa-user" style="color:#b30000; margin-right:6px;"></i> Full Name <span style="color:red;">*</span>
+                </label>
+                <input type="text" th:field="*{fullName}" required placeholder="Enter full name"
+                       style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; font-size:1em; box-sizing:border-box;">
+            </div>
+
+            <!-- Email Address -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:bold; margin-bottom:8px; color:#333;">
+                    <i class="fa-solid fa-envelope" style="color:#b30000; margin-right:6px;"></i> Email Address <span style="color:red;">*</span>
+                </label>
+                <input type="email" th:field="*{email}" required placeholder="Enter email address"
+                       style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; font-size:1em; box-sizing:border-box;">
+            </div>
+
+            <!-- Phone Number -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:bold; margin-bottom:8px; color:#333;">
+                    <i class="fa-solid fa-phone" style="color:#b30000; margin-right:6px;"></i> Phone Number
+                </label>
+                <input type="text" th:field="*{phone}" placeholder="Enter contact phone number"
+                       style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; font-size:1em; box-sizing:border-box;">
+            </div>
+
+            <!-- User Role -->
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:bold; margin-bottom:8px; color:#333;">
+                    <i class="fa-solid fa-user-gear" style="color:#b30000; margin-right:6px;"></i> Account Role <span style="color:red;">*</span>
+                </label>
+                <select th:field="*{role}" required
+                        style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; font-size:1em; box-sizing:border-box; background:white;">
+                    <option value="USER" th:selected="${userRequest.role == 'USER' || userRequest.role == 'ROLE_USER'}">USER (Standard Access)</option>
+                    <option value="ADMIN" th:selected="${userRequest.role == 'ADMIN' || userRequest.role == 'ROLE_ADMIN'}">ADMIN (System Administrator)</option>
+                </select>
+            </div>
+
+            <!-- Account Status -->
+            <div style="margin-bottom:25px;">
+                <label style="display:block; font-weight:bold; margin-bottom:8px; color:#333;">
+                    <i class="fa-solid fa-toggle-on" style="color:#b30000; margin-right:6px;"></i> Account Status
+                </label>
+                <select th:field="*{enabled}" required
+                        style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; font-size:1em; box-sizing:border-box; background:white;">
+                    <option value="true" th:selected="${userRequest.enabled == true}">Active (Enabled)</option>
+                    <option value="false" th:selected="${userRequest.enabled == false}">Inactive (Disabled)</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" 
+                    style="background:#b30000; color:white; width:100%; padding:14px; border:none; border-radius:6px; font-size:1.05em; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 8px rgba(179,0,0,0.3); transition:background 0.3s ease;">
+                <i class="fa-solid fa-floppy-disk"></i> Save User Changes
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>
