@@ -42,7 +42,7 @@ public class Donor {
     @Column(nullable = false)
     private String pincode;
 
-    @Column(nullable = false, columnDefinition = "DECIMAL")
+    @Column(nullable = false, columnDefinition = "DECIMAL(10,2)")
     private Double weight;
 
     @Column(nullable = false)
