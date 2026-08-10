@@ -43,6 +43,18 @@ class BloodBankEndToEndIntegrationTest {
     private com.example.demo.repository.RoleRepository roleRepository;
 
     @Autowired
+    private com.example.demo.repository.BloodStockRepository bloodStockRepository;
+
+    @Autowired
+    private com.example.demo.repository.BloodRequestRepository bloodRequestRepository;
+
+    @Autowired
+    private com.example.demo.repository.DonationHistoryRepository donationHistoryRepository;
+
+    @Autowired
+    private com.example.demo.repository.DonorRepository donorRepository;
+
+    @Autowired
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     /*
@@ -81,6 +93,11 @@ class BloodBankEndToEndIntegrationTest {
 
     @BeforeEach
     void setUp() throws Exception {
+
+        donationHistoryRepository.deleteAll();
+        bloodRequestRepository.deleteAll();
+        donorRepository.deleteAll();
+        bloodStockRepository.deleteAll();
 
         com.example.demo.entity.Role userRole = roleRepository.findByRoleNameIgnoreCase("USER")
                 .orElseGet(() -> {
