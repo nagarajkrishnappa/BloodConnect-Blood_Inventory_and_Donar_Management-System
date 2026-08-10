@@ -41,7 +41,10 @@ import com.example.demo.security.JwtService;
 import com.example.demo.service.DonationHistoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @WebMvcTest(DonationHistoryApiController.class)
+@ActiveProfiles("test")
 class DonationHistoryApiControllerTest {
 
     @Autowired

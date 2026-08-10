@@ -36,7 +36,10 @@ import com.example.demo.security.JwtService;
 import com.example.demo.service.DonorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @WebMvcTest(DonorApiController.class)
+@ActiveProfiles("test")
 class DonorApiControllerTest {
 
     @Autowired

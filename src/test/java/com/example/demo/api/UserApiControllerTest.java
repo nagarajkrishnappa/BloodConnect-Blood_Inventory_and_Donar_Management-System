@@ -36,7 +36,10 @@ import com.example.demo.security.JwtService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @WebMvcTest(UserApiController.class)
+@ActiveProfiles("test")
 class UserApiControllerTest {
 
     @Autowired

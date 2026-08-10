@@ -36,7 +36,10 @@ import com.example.demo.security.JwtService;
 import com.example.demo.service.BloodStockService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @WebMvcTest(BloodStockApiController.class)
+@ActiveProfiles("test")
 class BloodStockApiControllerTest {
 
     @Autowired
