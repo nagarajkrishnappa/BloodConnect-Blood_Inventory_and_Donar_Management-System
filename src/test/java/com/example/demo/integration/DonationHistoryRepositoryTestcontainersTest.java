@@ -50,6 +50,7 @@ class DonationHistoryRepositoryTestcontainersTest {
         registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
         registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.MySQLDialect");
+        registry.add("spring.jpa.properties.hibernate.dialect", () -> "org.hibernate.dialect.MySQLDialect");
     }
 
     @Autowired

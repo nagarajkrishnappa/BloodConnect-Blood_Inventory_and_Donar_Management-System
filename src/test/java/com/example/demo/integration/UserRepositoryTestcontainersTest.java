@@ -56,6 +56,10 @@ class UserRepositoryTestcontainersTest {
         registry.add(
                 "spring.jpa.database-platform",
                 () -> "org.hibernate.dialect.MySQLDialect");
+
+        registry.add(
+                "spring.jpa.properties.hibernate.dialect",
+                () -> "org.hibernate.dialect.MySQLDialect");
     }
 
     @Autowired
